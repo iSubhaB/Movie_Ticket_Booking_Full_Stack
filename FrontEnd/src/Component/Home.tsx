@@ -48,7 +48,7 @@ export const Home = () => {
   const login_handel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
-      .post("http://localhost:3000/home/login", {
+      .post("http://localhost:3000/home/user-login", {
         email: loginstate.email,
         password: loginstate.password,
       })
