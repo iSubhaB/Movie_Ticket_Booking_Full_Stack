@@ -23,7 +23,9 @@ route.post("/login",CL.admin_login)
 
 
 //User Data Work.....................................
-route.post("/search",UC.user_search)
+route.get("/search",UC.user_search)
+route.post("/user-register",UC.user_register)
+route.post("/user-login",UC.login)
 
 
 

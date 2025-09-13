@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface Movie {
-  _id: string; // MongoDB uses _id// matches backend schema
+  _id: string; // MongoDB uses _id
   title: string;
   type: string;
   releaseDate: string;
@@ -13,17 +13,24 @@ interface Movie {
   rating: string;
   totalHalls: string;
   language: string;
+  poster?: string; // added poster for thumbnail
 }
 
 export const Admin_Panel = () => {
-  const ref1 = React.useRef<HTMLHeadingElement>(null);     
+  const ref1 = React.useRef<HTMLHeadingElement>(null);
   const [allmovies, setAllmovies] = useState<Movie[]>([]);
   const [photo, setPhoto] = React.useState<File>();
-  const [newMovie, setNewMovie] = useState<Omit<Movie, "_id" | "poster">>({ title: "", type: "", language: "",
-    releaseDate: "", totalLikes: "",length: "",rating: "",totalHalls: "",});
-  const navigate= useNavigate()
-
-
+  const [newMovie, setNewMovie] = useState<Omit<Movie, "_id" | "poster">>({
+    title: "",
+    type: "",
+    language: "",
+    releaseDate: "",
+    totalLikes: "",
+    length: "",
+    rating: "",
+    totalHalls: "",
+  });
+  const navigate = useNavigate();
 
   const valUpd = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -37,9 +44,11 @@ export const Admin_Panel = () => {
     setPhoto(e.target.files?.[0]);
   };
 
+
+
   const handel_submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     if (!photo) {
       alert("Please upload an image");
       return;
@@ -68,33 +77,37 @@ export const Admin_Panel = () => {
       });
   };
 
-  React.useEffect(()=>{
-    axios.get("http://localhost:3000/home/all-movies")  //fetch all movie
-    .then((res)=>{
-      setAllmovies(res.data.movies)
-    }).catch((err)=>{
-      console.log(err);
-    })
-  },[handel_submit])
 
 
- const handel_Delete = (_id: string) => {     // handel the delete Data
-  axios.delete("http://localhost:3000/home/delete", {
-    data: { _id: _id }   // must be wrapped in "data"
-  })
-  .then((res) => {
-    console.log(res.data);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-};
+    React.useEffect(() => {
+    axios
+      .get("http://localhost:3000/home/all-movies") // fetch all movies
+      .then((res) => {
+        setAllmovies(res.data.movies);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },[handel_submit]);
 
+  const handel_Delete = (_id: string) => {
+   
+    axios
+      .delete("http://localhost:3000/home/delete", {
+        data: { _id: _id }, // must be wrapped in "data"
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-const handel_Edit=(_id:any)=>{
-navigate(`/editmovie/${_id}`)
-}
-
+  const handel_Edit = (_id: any) => {
+  
+    navigate(`/editmovie/${_id}`);
+  };
 
   return (
     <div className="container mt-4">
@@ -197,12 +210,12 @@ navigate(`/editmovie/${_id}`)
 
       <h2 className="mb-3">Movie List</h2>
       <div className="card p-3 shadow-sm">
-        <table className="table table-striped">
+        <table className="table table-striped align-middle">
           <thead>
             <tr>
               <th>ID</th>
               <th>Poster</th>
-              <th>Title</th>
+              <th style={{ maxWidth: "150px" }}>Title</th>
               <th>Type</th>
               <th>Language</th>
               <th>Release Date</th>
@@ -210,7 +223,7 @@ navigate(`/editmovie/${_id}`)
               <th>Total Likes</th>
               <th>Length</th>
               <th>Rating</th>
-              <th>Actions</th>
+              <th style={{ width: "140px" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -223,8 +236,28 @@ navigate(`/editmovie/${_id}`)
             ) : (
               allmovies.map((movie) => (
                 <tr key={movie._id}>
-                  <td>{movie._id}</td>
-                  <td>{movie.title}</td>
+                  <td className="text-truncate" style={{ maxWidth: "120px" }}>
+                    {movie._id}
+                  </td>
+                  <td>
+                    {movie.poster ? (
+                      <img
+                        src={movie.poster}
+                        alt={movie.title}
+                        style={{
+                          width: "60px",
+                          height: "80px",
+                          objectFit: "cover",
+                        }}
+                        className="rounded"
+                      />
+                    ) : (
+                      <span className="text-muted">No Poster</span>
+                    )}
+                  </td>
+                  <td className="text-truncate" style={{ maxWidth: "150px" }}>
+                    {movie.title}
+                  </td>
                   <td>{movie.type}</td>
                   <td>{movie.language}</td>
                   <td>{movie.releaseDate}</td>
@@ -233,8 +266,24 @@ navigate(`/editmovie/${_id}`)
                   <td>{movie.length}</td>
                   <td>{movie.rating}</td>
                   <td>
-                    <button className="btn btn-primary btn-sm me-2" onClick={()=>{handel_Edit(movie._id)}}>Edit</button>
-                    <button className="btn btn-danger btn-sm" onClick={()=>{handel_Delete(movie._id)}}>Delete</button>
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => {
+                          handel_Edit(movie._id);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => {
+                          handel_Delete(movie._id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

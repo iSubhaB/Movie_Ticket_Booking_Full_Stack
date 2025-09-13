@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import pic1 from "../Document/2010-inception-movie-inception-poster-wallpaper-thumb.jpg";
 import pic2 from "../Document/E_iq1p1VUAcuIDJ.jpg";
@@ -7,10 +8,22 @@ import pic3 from "../Document/Fighter_1705756151579_1705756165299.jpg";
 import pic4 from "../Document/avenger.jpg";
 import pic5 from "../Document/war-2.jpg";
 
+interface Test {
+  email: string;
+  password: string;
+}
+
 export const Home = () => {
   const [signin, setSignin] = React.useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const navigate = useNavigate();
+  const [popup, setPopup] = React.useState<boolean>(false); // for admin
+  const [popup2, setPopup2] = React.useState<boolean>(false); // for user login
+  const [loginstate, setLoginstate] = React.useState<Test>({
+    email: "",
+    password: "",
+  });
+  const [loginStatus, setLoginStatus] = React.useState<boolean>(false); //if login success. it will true
 
   const images = [pic1, pic2, pic3, pic4, pic5];
 
@@ -26,13 +39,45 @@ export const Home = () => {
     navigate("/search");
   };
 
-  // Wrap index safely
-  const getIndex = (idx: number) => {
-    return (idx + images.length) % images.length;
+  const getIndex = (idx: number) => (idx + images.length) % images.length;
+
+  const admin_Panel = () => {
+    navigate("/register_login");
   };
 
-  const admin_Panel=()=>{
-  navigate("/register_login")
+  const login_handel = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:3000/home/login", {
+        email: loginstate.email,
+        password: loginstate.password,
+      })
+      .then((res) => {
+        if (res.data.msg) {
+          alert(res.data.msg);
+  setPopup2(false);
+  setLoginStatus(true);
+  // Save login data
+  localStorage.setItem("userLogin", JSON.stringify(loginstate));
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Server Error");
+      });
+  };
+                  // login data reloade
+  React.useEffect(() => {     
+  const storedUser = localStorage.getItem("userLogin");
+  if (storedUser) {
+    setLoginStatus(true);
+    setLoginstate(JSON.parse(storedUser));
+  }
+}, []);
+
+  const hanleBookNow=()=>{
+
+navigate("/book-movie")
   }
 
   return (
@@ -40,7 +85,7 @@ export const Home = () => {
       <div>
         {/* Main div */}
         <div>
-          {/* top header */}
+          {/* Top header */}
           <nav className="d-flex justify-content-between align-items-center p-2 bg-light shadow-sm">
             {/* Left side */}
             <div className="d-flex align-items-center gap-3">
@@ -56,7 +101,65 @@ export const Home = () => {
 
             {/* Right side */}
             <div className="d-flex align-items-center">
-             <button className="btn btn-warning ms-3" onClick={admin_Panel}>Admin Panel</button>
+              <button
+                className="btn btn-light ms-3"
+                onClick={() => setPopup(true)}
+              >
+                Admin Access
+              </button>
+
+              {/* Admin Panel POPUP */}
+              {popup && (
+                <div
+                  className="modal fade show"
+                  style={{
+                    display: "block",
+                    backgroundColor: "rgba(0,0,0,0.6)",
+                  }}
+                >
+                  <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content border-0 shadow-lg rounded-4">
+                      <div className="modal-header bg-warning text-dark rounded-top-4">
+                        <h5 className="modal-title d-flex align-items-center">
+                          ⚠️ Admin Confirmation
+                        </h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          onClick={() => setPopup(false)}
+                        ></button>
+                      </div>
+
+                      <div className="modal-body text-center p-4">
+                        <h5 className="fw-bold mb-3">
+                          Are you sure you are an admin?
+                        </h5>
+                        <p className="text-muted">
+                          Access to the Admin Panel is restricted to authorized
+                          users only.
+                        </p>
+                      </div>
+
+                      <div className="modal-footer border-0 d-flex justify-content-center pb-4">
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary px-4"
+                          onClick={() => setPopup(false)}
+                        >
+                          ❌ No
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-success px-4"
+                          onClick={admin_Panel}
+                        >
+                          ✅ Yes, Continue
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <select className="form-select" style={{ width: "150px" }}>
                 <option value="kolkata">Kolkata</option>
@@ -71,17 +174,115 @@ export const Home = () => {
                 <option value="pune">Pune</option>
               </select>
 
-              {/* Toggle button */}
-              <button
-                className={`btn ms-3 px-4 ${
-                  signin ? "btn-danger" : "btn-success"
-                }`}
-                onClick={() => setSignin(!signin)}
-              >
-                {signin ? "Sign Out" : "Sign In"}
-              </button>
-            
+              {/* Sign In dropdown with logo */}
+              <div className="dropdown ms-3">
+                <button
+                  className="btn btn-light dropdown-toggle d-flex align-items-center"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  👤
+                </button>
+
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <button
+                      className="dropdown-item"
+                      onClick={() => setPopup2(true)}
+                    >
+                      LogIn
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item"
+                      onClick={() => navigate("/user_register")}
+                    >
+                      Register
+                    </button>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <a className="dropdown-item">Logout</a>
+                  </li>
+                </ul>
+              </div>
             </div>
+
+            {/* User Login POPUP2 start */}
+            {popup2 && (
+              <div
+                className="modal fade show"
+                style={{ display: "block", backgroundColor: "rgba(0,0,0,0.6)" }}
+              >
+                <div className="modal-dialog modal-dialog-centered">
+                  <div className="modal-content border-0 shadow-lg rounded-4">
+                    <div className="modal-header bg-primary text-white rounded-top-4">
+                      <h5 className="modal-title d-flex align-items-center">
+                        🔑 User Login
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setPopup2(false)}
+                      ></button>
+                    </div>
+
+                    <form onSubmit={login_handel}>
+                      <div className="modal-body p-4">
+                        <div className="mb-3">
+                          <label className="form-label fw-bold">Email</label>
+                          <input
+                            type="email"
+                            name="email"
+                            className="form-control"
+                            placeholder="Enter your email"
+                            value={loginstate.email}
+                            onChange={(e) =>
+                              setLoginstate({
+                                ...loginstate,
+                                email: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label fw-bold">Password</label>
+                          <input
+                            type="password"
+                            className="form-control"
+                            placeholder="Enter your password"
+                            value={loginstate.password}
+                            onChange={(e) =>
+                              setLoginstate({
+                                ...loginstate,
+                                password: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="modal-footer border-0 d-flex justify-content-center pb-4">
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary px-4"
+                          onClick={() => setPopup2(false)}
+                        >
+                          ❌ Cancel
+                        </button>
+                        <button type="submit" className="btn btn-success px-4">
+                          ✅ Login
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* User Login POPUP2 Closed */}
           </nav>
         </div>
 
@@ -94,7 +295,6 @@ export const Home = () => {
             overflow: "hidden",
           }}
         >
-          {/* Left poster */}
           <div
             className="position-absolute"
             style={{
@@ -116,7 +316,6 @@ export const Home = () => {
             />
           </div>
 
-          {/* Center poster with Book Now button */}
           <div
             style={{
               zIndex: 2,
@@ -133,9 +332,8 @@ export const Home = () => {
                 boxShadow: "0 8px 20px rgba(0,0,0,0.8)",
               }}
             />
-
-            {/* Book Now button */}
-            <button className="btn btn-primary"
+            <button                                                 // Book Now Button
+              className="btn btn-primary"
               style={{
                 position: "absolute",
                 bottom: "0",
@@ -147,8 +345,9 @@ export const Home = () => {
                 borderRadius: "25px",
                 padding: "4px 20px",
                 fontSize: "16px",
-                fontWeight: "bold",            
+                fontWeight: "bold",
               }}
+              onClick={()=>{loginStatus && hanleBookNow()}}
               onMouseOver={(e) =>
                 ((e.target as HTMLButtonElement).style.backgroundColor =
                   "#910b12ff")
@@ -158,11 +357,10 @@ export const Home = () => {
                   "#e50914")
               }
             >
-              Book Now
+              Book Now                 
             </button>
           </div>
 
-          {/* Right poster */}
           <div
             className="position-absolute"
             style={{
@@ -184,7 +382,6 @@ export const Home = () => {
             />
           </div>
 
-          {/* Prev button */}
           <button
             className="btn btn-dark position-absolute top-50 start-0 translate-middle-y ms-2"
             onClick={() =>
@@ -196,7 +393,6 @@ export const Home = () => {
             ◀
           </button>
 
-          {/* Next button */}
           <button
             className="btn btn-dark position-absolute top-50 end-0 translate-middle-y me-2"
             onClick={() =>
@@ -208,14 +404,11 @@ export const Home = () => {
             ▶
           </button>
         </div>
-        <div> {/* Currently Running */}
-            <h1>Currently Running</h1>
-            <div>
 
-            </div>
-        </div> {/* Currently Running end div */}
+        {/* Currently Running */}
         <div>
-
+          <h1>Currently Running</h1>
+          <div></div>
         </div>
       </div>
     </>

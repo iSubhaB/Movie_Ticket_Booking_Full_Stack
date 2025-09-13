@@ -96,6 +96,7 @@ update:async(req,res)=>{
 admin_register: async (req,res)=>{
   try {
     const {name,phone_no,email,password,conf_password}=req.body;
+    const flag= 1;
 const salt = bcrypt.genSaltSync(10);
 const encript = bcrypt.hashSync(password, salt);
 
@@ -104,6 +105,7 @@ const encript = bcrypt.hashSync(password, salt);
         phone_no:phone_no,
         email:email,
         password:encript,
+        flag:1,
     })
     const result= await newData.save();
     res.json({msg:" Register Succesfully ",

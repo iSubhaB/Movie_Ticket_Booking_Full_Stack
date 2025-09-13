@@ -5,11 +5,12 @@ const schema= mongoose.Schema({
     phone_no: {type:Number, required:true ,unique: true} ,
     email:{type:String, required:true, unique:true},
     password:{type:String, required:true,},
+    address:{type:String},
     flag:{type:String}
   
 
 },{timestamps: true})
 
-const Reg_model= mongoose.model("admin_register", schema)
+const user_reg_model= mongoose.model("user_register", schema)
 
-module.exports= Reg_model
+module.exports= user_reg_model

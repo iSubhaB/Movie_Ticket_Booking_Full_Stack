@@ -5,6 +5,8 @@ import { Search_Movie } from './User_Panel/Search_Movie';
 import { Admin_Panel } from './Admin_Panel/Admin_Panel';
 import { Edit_Movie } from './Admin_Panel/Edit_movie';
 import { Admin_Register_login } from './Admin_Panel/Register_Login';
+import { User_Register } from './User_Panel/User_Register';
+import { Book_Movie } from './Book_Movie';
 
 export const Rules= ()=>{
 
@@ -18,6 +20,8 @@ export const Rules= ()=>{
        <Route path='/register_login' element={<Admin_Register_login/>}/>
     b  <Route path='/editmovie/:_id' element={<Edit_Movie/>}/>
     <Route path='/admin-panel' element={<Admin_Panel/>}></Route>
+    <Route path='/user_register' element={<User_Register/>}></Route>
+    <Route path='/book-movie' element={<Book_Movie/>}></Route>
 
         </Routes>
         </BrowserRouter>
