@@ -6,9 +6,7 @@ const schema= mongoose.Schema({
     email:{type:String, required:true, unique:true},
     password:{type:String, required:true,},
     address:{type:String},
-    flag:{type:String}
-  
-
+    flag:{type:String},
 },{timestamps: true})
 
 const user_reg_model= mongoose.model("user_register", schema)

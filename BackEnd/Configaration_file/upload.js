@@ -24,7 +24,7 @@ const upload = multer({
                 return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
             }
         },
-        limits: { fileSize: 1000000 }
+        limits: { fileSize: 2000000 }
     });
 
 module.exports = upload;

@@ -1,7 +1,7 @@
 const movielist = require("../Model_Schema/Admin_Schema/add_movie_schema");
 const user = require("../Model_Schema/User_Schema/User_register_schema");
 const bcrypt = require("bcryptjs");
-
+const  booked=require("../Model_Schema/User_Schema/Boooked_Movie")
 const User_Controller = {
   // Search all movies
   user_search: async (req, res) => {
@@ -25,7 +25,7 @@ const User_Controller = {
   // User Registration
   user_register: async (req, res) => {
     try {
-      const { name, phone_no, email, password, address } = req.body;
+      const { name, phone_no, email, password, address} = req.body;
 
       // Check if user already exists
       const existingUser = await user.findOne({ email: email });
@@ -45,6 +45,7 @@ const User_Controller = {
         password: hashedPassword,
         flag: 0,
         address: address,
+
       });
 
       const savedUser = await newUser.save();
@@ -102,6 +103,36 @@ const User_Controller = {
       });
     }
   },
+
+  // bookedMovie
+
+ 
+  bookedMovie:async (req,res)=>{
+    try {
+      const {name,email,Seat_No,Seat_Type,Show_Time}=req.body;
+
+      const movie=  new booked({
+        name:name,
+        email:email,
+        Seat_No:Seat_No,
+        Seat_Type:Seat_Type,
+        Show_Time:Show_Time,
+      })
+
+      const result=await movie.save()
+      if (result){
+        res.json({msg: "Succesfull"})
+      }
+      
+    } catch (error) {
+     console.log(error); 
+     res.json({msg:"Server Error",
+             error:error.message
+     })
+    }
+  }
+
+
 };
 
 module.exports = User_Controller;

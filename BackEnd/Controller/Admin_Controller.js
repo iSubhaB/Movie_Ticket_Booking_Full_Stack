@@ -26,14 +26,14 @@ const Admin_Controller = {
       
       const newMovie = new Movie({
         poster: url + req.file.filename,
-        title,
-        type,
-        language,
-        releaseDate,
-        totalLikes,
-        length,
-        rating,
-        totalHalls,
+        title:title,
+        type:type,
+        language:language,
+        releaseDate:releaseDate,
+        totalLikes:totalLikes,
+        length:length,
+        rating:rating,
+        totalHalls:totalHalls,
       });
 
       const savedMovie = await newMovie.save();

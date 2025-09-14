@@ -26,6 +26,8 @@ route.post("/login",CL.admin_login)
 route.get("/search",UC.user_search)
 route.post("/user-register",UC.user_register)
 route.post("/user-login",UC.login)
+route.post("/booking-details",UC.bookedMovie)
+
 
 
 

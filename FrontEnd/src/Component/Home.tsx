@@ -7,6 +7,7 @@ import pic2 from "../Document/E_iq1p1VUAcuIDJ.jpg";
 import pic3 from "../Document/Fighter_1705756151579_1705756165299.jpg";
 import pic4 from "../Document/avenger.jpg";
 import pic5 from "../Document/war-2.jpg";
+import { Currently_Running } from "./Currently_Running";
 
 interface Test {
   email: string;
@@ -39,8 +40,11 @@ export const Home = () => {
     navigate("/search");
   };
 
+
+
   const getIndex = (idx: number) => (idx + images.length) % images.length;
 
+  
   const admin_Panel = () => {
     navigate("/register_login");
   };
@@ -72,13 +76,26 @@ export const Home = () => {
   if (storedUser) {
     setLoginStatus(true);
     setLoginstate(JSON.parse(storedUser));
+    
   }
 }, []);
 
-  const hanleBookNow=()=>{
+const handel_Logout = () => {
+  localStorage.removeItem("userLogin");   // ✅ clear saved login
+  setLoginStatus(false);                  // ✅ update UI state
+  setLoginstate({ email: "", password: "" }); // ✅ reset login form
+  alert("You have logged out successfully"); // (optional)
+};
 
-navigate("/book-movie")
+
+ const hanleBookNow = () => {
+  if (!loginStatus) {   // if NOT logged in
+    alert("please login first");
+    return;
   }
+  navigate("/book-movie"); // only allow when logged in
+};
+ 
 
   return (
     <>
@@ -206,7 +223,8 @@ navigate("/book-movie")
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <a className="dropdown-item">Logout</a>
+                  <button onClick={handel_Logout}    className="dropdown-item"> <a className="dropdown-item">Logout</a></button>
+                   
                   </li>
                 </ul>
               </div>
@@ -347,7 +365,7 @@ navigate("/book-movie")
                 fontSize: "16px",
                 fontWeight: "bold",
               }}
-              onClick={()=>{loginStatus && hanleBookNow()}}
+              onClick={()=>{hanleBookNow()}}
               onMouseOver={(e) =>
                 ((e.target as HTMLButtonElement).style.backgroundColor =
                   "#910b12ff")
@@ -404,11 +422,12 @@ navigate("/book-movie")
             ▶
           </button>
         </div>
-
+<br /><br />
         {/* Currently Running */}
         <div>
-          <h1>Currently Running</h1>
-          <div></div>
+          <div>
+            <Currently_Running/>
+          </div>
         </div>
       </div>
     </>
