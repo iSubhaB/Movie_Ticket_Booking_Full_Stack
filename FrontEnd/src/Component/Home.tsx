@@ -17,6 +17,8 @@ interface Test {
 export const Home = () => {
   const [signin, setSignin] = React.useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = React.useState(0);
+  const ref1 = React.useRef<HTMLHeadingElement>(null);
+  const ref3 = React.useRef<HTMLHeadingElement>(null);
   const navigate = useNavigate();
   const [popup, setPopup] = React.useState<boolean>(false); // for admin
   const [popup2, setPopup2] = React.useState<boolean>(false); // for user login
@@ -40,11 +42,8 @@ export const Home = () => {
     navigate("/search");
   };
 
-
-
   const getIndex = (idx: number) => (idx + images.length) % images.length;
 
-  
   const admin_Panel = () => {
     navigate("/register_login");
   };
@@ -57,45 +56,47 @@ export const Home = () => {
         password: loginstate.password,
       })
       .then((res) => {
-        if (res.data.msg) {
-          alert(res.data.msg);
-  setPopup2(false);
+       if (res.data.success) {
   setLoginStatus(true);
-  // Save login data
-  localStorage.setItem("userLogin", JSON.stringify(loginstate));
-        }
+  if (ref3.current) ref3.current.innerHTML = res.data.msg; // "Login Successfully"
+  localStorage.setItem("userLogin", JSON.stringify(res.data.user));
+} else {
+  setLoginStatus(false);
+  if (ref3.current) ref3.current.innerHTML = res.data.msg; // "Incorrect password" / "User not found"
+}
+
       })
       .catch((error) => {
         console.error(error);
         alert("Server Error");
       });
   };
-                  // login data reloade
-  React.useEffect(() => {     
-  const storedUser = localStorage.getItem("userLogin");
-  if (storedUser) {
-    setLoginStatus(true);
-    setLoginstate(JSON.parse(storedUser));
-    
-  }
-}, []);
 
-const handel_Logout = () => {
-  localStorage.removeItem("userLogin");   // ✅ clear saved login
-  setLoginStatus(false);                  // ✅ update UI state
-  setLoginstate({ email: "", password: "" }); // ✅ reset login form
-  alert("You have logged out successfully"); // (optional)
-};
+  // login data reload
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("userLogin");
+    if (storedUser) {
+      setLoginStatus(true);
+      setLoginstate(JSON.parse(storedUser));
+    }
+  }, []);
 
+  const handel_Logout = () => {
+    localStorage.removeItem("userLogin"); // ✅ clear saved login
+    setLoginStatus(false); // ✅ update UI state
+    setLoginstate({ email: "", password: "" }); // ✅ reset login form
+    alert("You have logged out successfully"); // (optional)
+  };
 
- const hanleBookNow = () => {
-  if (!loginStatus) {   // if NOT logged in
-    alert("please login first");
-    return;
-  }
-  navigate("/book-movie"); // only allow when logged in
-};
- 
+  const hanleBookNow = () => {
+    if (!loginStatus) {
+      setPopup2(true);
+      // if NOT logged in
+      if (ref1.current) ref1.current.innerHTML = "Please Login First";
+      return;
+    }
+    navigate("/book-movie"); // only allow when logged in
+  };
 
   return (
     <>
@@ -223,8 +224,10 @@ const handel_Logout = () => {
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                  <button onClick={handel_Logout}    className="dropdown-item"> <a className="dropdown-item">Logout</a></button>
-                   
+                    <button onClick={handel_Logout} className="dropdown-item">
+                      {" "}
+                      <a className="dropdown-item">Logout</a>
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -282,6 +285,7 @@ const handel_Logout = () => {
                             }
                           />
                         </div>
+                        <h3 ref={ref3} className="text-center mt-3"></h3>
                       </div>
                       <div className="modal-footer border-0 d-flex justify-content-center pb-4">
                         <button
@@ -350,7 +354,7 @@ const handel_Logout = () => {
                 boxShadow: "0 8px 20px rgba(0,0,0,0.8)",
               }}
             />
-            <button                                                 // Book Now Button
+            <button // Book Now Button
               className="btn btn-primary"
               style={{
                 position: "absolute",
@@ -365,7 +369,9 @@ const handel_Logout = () => {
                 fontSize: "16px",
                 fontWeight: "bold",
               }}
-              onClick={()=>{hanleBookNow()}}
+              onClick={() => {
+                hanleBookNow();
+              }}
               onMouseOver={(e) =>
                 ((e.target as HTMLButtonElement).style.backgroundColor =
                   "#910b12ff")
@@ -375,7 +381,7 @@ const handel_Logout = () => {
                   "#e50914")
               }
             >
-              Book Now                 
+              Book Now
             </button>
           </div>
 
@@ -422,11 +428,12 @@ const handel_Logout = () => {
             ▶
           </button>
         </div>
-<br /><br />
+        <br />
+        <br />
         {/* Currently Running */}
         <div>
           <div>
-            <Currently_Running/>
+            <Currently_Running />
           </div>
         </div>
       </div>

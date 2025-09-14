@@ -15,20 +15,62 @@ interface Movie {
   totalHalls: string;
 }
 
+interface Test {
+  name: string;
+  email: string;
+  Seat_No: string;
+  Seat_Type: string;
+  Show_Time: string;
+}
 
+interface Test2 {
+  email: string;
+  password: string;
+}
 
 export const Book_Movie: React.FC = () => {
   const [movieList, setMovieList] = React.useState<Movie[]>([]);
   const navigate = useNavigate();
+  const [booking, setBooking] = React.useState<Test[]>([]);
+  const [loginstate, setLoginstate] = React.useState<Test2>({
+    email: "",
+    password: "",
+  });
 
-  
+  // ✅ Load stored user
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("userLogin");
+    if (storedUser) {
+      setLoginstate(JSON.parse(storedUser));
+    }
+  }, []);
 
+  // ✅ Fetch bookings for logged-in user
+  React.useEffect(() => {
+    if (!loginstate.email) return;
 
+    axios
+      .post("http://localhost:3000/home/your-ticket", {
+        email: loginstate.email,
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setBooking(res.data.bookings || []);
+        } else {
+          setBooking([]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [loginstate.email]);
+
+  // ✅ Fetch all movies
   React.useEffect(() => {
     axios
       .get("http://localhost:3000/home/all-movies")
       .then((res) => {
-        setMovieList(res.data.movies);
+        setMovieList(res.data.movies || []);
       })
       .catch((error) => {
         console.log(error);
@@ -39,10 +81,51 @@ export const Book_Movie: React.FC = () => {
     navigate("/ticket-booking", { state: movie });
   };
 
+  // ✅ Delete all bookings for the logged-in user
+  const deleteBooking = (email: string) => {
+    axios
+      .post("http://localhost:3000/home/delete-booked", { email:email }, // ✅ send email in request body
+      )
+      .then((res) => {
+        console.log("Deleted bookings:", res.data);
+        setBooking([]); // clear from UI after delete
+      })
+      .catch((err) => {
+        console.error("Error deleting booking:", err);
+      });
+  };
+
   return (
     <div className="container mt-4">
       <h1 className="mb-3 text-center">🎬 Book Your Movie</h1>
 
+      {/* ✅ Floating Booking Corner */}
+   {booking.length > 0 && (
+  <div
+    className="position-fixed top-0 end-0 m-2 p-2 bg-light shadow rounded"
+    style={{ width: "180px", fontSize: "0.8rem", zIndex: 1050 }}
+  >
+    <h6 className="mb-2 text-primary">🎟 Your Bookings</h6>
+    {booking.map((b, idx) => (
+      <div
+        key={idx}
+        className="border-bottom pb-1 mb-1"
+        style={{ lineHeight: "1.2" }}
+      >
+        Show: {b.Show_Time}
+      </div>
+    ))}
+    <button
+      className="btn btn-sm btn-danger w-100 mt-2"
+      onClick={() => deleteBooking(loginstate.email)}
+    >
+      Delete All
+    </button>
+  </div>
+)}
+
+
+      {/* Movies Grid */}
       <div className="row g-4">
         {movieList.length === 0 ? (
           <div className="col-12 text-center">

@@ -75,7 +75,7 @@ const User_Controller = {
 
       // Find user by email
       const existingUser = await user.findOne({ email: email });
-      console.log(existingUser);
+      // console.log(existingUser);
       if (!existingUser) {
         return res.json({ success: false, msg: "User not found. Please register first" });
       }
@@ -130,7 +130,42 @@ const User_Controller = {
              error:error.message
      })
     }
+  },
+  bookedfetch: async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await booked.find({ email: email }); // ✅ use find()
+    if (result.length > 0) {
+      return res.json({
+        success: true,
+        msg: "Your Bookings",
+        bookings: result,
+      });
+    } else {
+      return res.json({
+        success: false,
+        msg: "No bookings found for this user",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      msg: "Server Error",
+      error: error.message,
+    });
   }
+},
+deleteBooked:async(req,res)=>{
+  try {
+    const {email}=req.body;
+    const result= await booked.deleteOne({email:email})
+    res.json({msg:"deleted"})
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
 };

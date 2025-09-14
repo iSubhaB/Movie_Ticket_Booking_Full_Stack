@@ -27,6 +27,8 @@ route.get("/search",UC.user_search)
 route.post("/user-register",UC.user_register)
 route.post("/user-login",UC.login)
 route.post("/booking-details",UC.bookedMovie)
+route.post("/your-ticket",UC.bookedfetch)
+route.post("/delete-booked",UC.deleteBooked)
 
 
 
