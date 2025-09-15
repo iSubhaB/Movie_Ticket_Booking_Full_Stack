@@ -36,7 +36,13 @@ export const Currently_Running = () => {
 
   return (
     <>
-      <h2 className="mb-4">Currently Running</h2>
+      <h2 
+  className="mb-4 fw-bold text-primary" 
+  style={{ marginLeft: "20px", letterSpacing: "1px" }}
+>
+  🎬 Currently Running
+</h2>
+
       <div className="container">
         <div className="row">
           {movieList.map((v, i) => (

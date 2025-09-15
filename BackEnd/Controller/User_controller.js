@@ -83,7 +83,7 @@ const User_Controller = {
       // Compare passwords
       const isMatch = await bcrypt.compare(password, existingUser.password);
       if (!isMatch) {
-        return res.json({ success: false, msg: "Incorrect password" });
+        return res.json({ success: false, msg: " ❌ Incorrect Password!" });
       }
 
       // Remove password from response
@@ -91,7 +91,7 @@ const User_Controller = {
 
       return res.json({
         success: true,
-        msg: "Login Successfully",
+        msg: " ✅ Login Successful!",
         user: userData,
       });
     } catch (error) {

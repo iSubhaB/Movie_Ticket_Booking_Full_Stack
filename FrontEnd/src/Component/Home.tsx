@@ -105,7 +105,7 @@ export const Home = () => {
         <div>
           {/* Top header */}
           <nav className="d-flex justify-content-between align-items-center p-2 bg-light shadow-sm">
-            {/* Left side */}
+                                                             {/* Left side */}
             <div className="d-flex align-items-center gap-3">
               <h2 className="m-0 fw-bold text-danger">BookMyMovie</h2>
               <input
@@ -117,7 +117,7 @@ export const Home = () => {
               />
             </div>
 
-            {/* Right side */}
+                                                             {/* Right side */}
             <div className="d-flex align-items-center">
               <button
                 className="btn btn-light ms-3"
@@ -126,7 +126,7 @@ export const Home = () => {
                 Admin Access
               </button>
 
-              {/* Admin Panel POPUP */}
+                                                         {/* Admin Panel POPUP */}
               {popup && (
                 <div
                   className="modal fade show"
@@ -192,7 +192,7 @@ export const Home = () => {
                 <option value="pune">Pune</option>
               </select>
 
-              {/* Sign In dropdown with logo */}
+                                                     {/* Sign In dropdown with logo */}
               <div className="dropdown ms-3">
                 <button
                   className="btn btn-light dropdown-toggle d-flex align-items-center"
@@ -285,7 +285,6 @@ export const Home = () => {
                             }
                           />
                         </div>
-                        <h3 ref={ref3} className="text-center mt-3"></h3>
                       </div>
                       <div className="modal-footer border-0 d-flex justify-content-center pb-4">
                         <button
@@ -298,17 +297,19 @@ export const Home = () => {
                         <button type="submit" className="btn btn-success px-4">
                           ✅ Login
                         </button>
+                        <h3 ref={ref3} className="text-center mt-3"></h3>
                       </div>
+                      
                     </form>
                   </div>
                 </div>
               </div>
             )}
-            {/* User Login POPUP2 Closed */}
+                                            {/* User Login POPUP2 Closed */}
           </nav>
         </div>
 
-        {/* Smooth Slideshow */}
+                                                      {/* Smooth Slideshow */}
         <div
           className="position-relative w-100 d-flex justify-content-center align-items-center"
           style={{
@@ -354,7 +355,7 @@ export const Home = () => {
                 boxShadow: "0 8px 20px rgba(0,0,0,0.8)",
               }}
             />
-            <button // Book Now Button
+            <button                                           // Book Now Button
               className="btn btn-primary"
               style={{
                 position: "absolute",
